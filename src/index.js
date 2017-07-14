@@ -4,6 +4,7 @@ import SearchBar from './components/search_bar';
 import YTSearch from 'youtube-api-search';
 import VideoList from './components/video_list';
 import VideoDetail from './components/video_detail';
+import _ from 'lodash';
 
 const API_KEY = 'AIzaSyAiKnQ00il8v4dmMDpe9qC6m-ks0AAIdzU';
 
@@ -17,8 +18,10 @@ class App extends Component {
             videos : [],
             selectedVideo : null
         }
-        
-        YTSearch({key:API_KEY,term : 'react tutorial'},(videos) => {
+        this.onVideoSearch('react-redux');
+   }
+    onVideoSearch(term){
+         YTSearch({key:API_KEY,term : term},(videos) => {
             //this.setState({videos});
             this.setState({
                 videos : videos,
@@ -27,9 +30,10 @@ class App extends Component {
         });
     }
     render() {
+        const videoSearch = _.debounce(term => {this.onVideoSearch(term)},300);
         return (
             <div>
-                <SearchBar />
+                <SearchBar onSearchTermChange = {videoSearch}/>
                 <VideoDetail video={this.state.selectedVideo}/>
                 <VideoList 
                 onVideoSelect = {(selectedVideo)=>this.setState({selectedVideo})}
